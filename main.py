@@ -4,7 +4,7 @@ from CreateDatabase import BuildDB
 
 BuildDB()
 
-conn = sqlite3.connect('Database.db')
+conn = sqlite3.connect('Test.db')
 c = conn.cursor()
 
 def getTables():
