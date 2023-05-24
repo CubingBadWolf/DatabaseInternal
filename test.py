@@ -38,10 +38,12 @@ def ReadCSVtoDB(file, db):
                             column_type = 'REAL NOT NULL'
                         else:
                             column_type = 'TEXT NOT NULL'
+                            break
 
                     except ValueError:
                         column_type = 'TEXT NOT NULL'
-                    break 
+                        break 
+                    break
             columnTypes[header] = column_type
 
         CreateQuery = f'CREATE TABLE {tableName} ('
@@ -49,7 +51,7 @@ def ReadCSVtoDB(file, db):
             CreateQuery += 'ID INTEGER PRIMARY KEY AUTOINCREMENT, '
         CreateQuery += ', '.join([f'{header} {column_type}' for header, column_type in columnTypes.items()])
         CreateQuery += ');'
-
+        print(CreateQuery)
         c.execute(CreateQuery)
             
         insert_query = f'INSERT INTO {tableName} VALUES ('
