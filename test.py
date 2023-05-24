@@ -25,11 +25,20 @@ def ReadCSVtoDB(file, db):
                         column_type = 'INTEGER PRIMARY KEY AUTOINCREMENT'
                         containsID = True
                     else:
-                        column_type = 'INTEGER NOT NULL'
+                        #If conflicting types found then make it default to text
+                        if column_type == None or column_type == 'INTEGER NOT NULL': 
+                            column_type = 'INTEGER NOT NULL'
+                        else:
+                            column_type = 'TEXT NOT NULL'
                 else:
                     try:
                         float(row[headers.index(header)])
-                        column_type = 'REAL NOT NULL'
+                        #If conflicting types found then make it default to text
+                        if column_type == None or column_type == 'Real NOT NULL': 
+                            column_type = 'REAL NOT NULL'
+                        else:
+                            column_type = 'TEXT NOT NULL'
+
                     except ValueError:
                         column_type = 'TEXT NOT NULL'
                     break 
@@ -39,14 +48,15 @@ def ReadCSVtoDB(file, db):
         if not containsID:
             CreateQuery += 'ID INTEGER PRIMARY KEY AUTOINCREMENT, '
         CreateQuery += ', '.join([f'{header} {column_type}' for header, column_type in columnTypes.items()])
-        CreateQuery += ')'
+        CreateQuery += ');'
+
         c.execute(CreateQuery)
             
         insert_query = f'INSERT INTO {tableName} VALUES ('
         if not containsID:
                 insert_query += 'NULL, '
         insert_query += ', '.join(["?"] * len(headers))
-        insert_query += ')'
+        insert_query += ');'
         c.executemany(insert_query, data)        
 
         conn.commit()
