@@ -1,6 +1,7 @@
 import csv
 import string
 import sqlite3
+from SanitiseStrings import *
 
 def ReadCSVtoDB(file, db):
     conn = sqlite3.connect(db)
@@ -15,9 +16,9 @@ def ReadCSVtoDB(file, db):
 
         headers = data.pop(0) #Removes the headers at the top of the csv and returns it to the variable
         containsID = False
-        
         columnTypes = {}
         for header in headers:
+            SanitiseData(header) #Checks that no malicous columns are being inserted
             column_type = None
             for row in data:
                 if row[headers.index(header)].isnumeric():
@@ -51,7 +52,6 @@ def ReadCSVtoDB(file, db):
             CreateQuery += 'ID INTEGER PRIMARY KEY AUTOINCREMENT, '
         CreateQuery += ', '.join([f'{header} {column_type}' for header, column_type in columnTypes.items()])
         CreateQuery += ');'
-        print(CreateQuery)
         c.execute(CreateQuery)
             
         insert_query = f'INSERT INTO {tableName} VALUES ('
