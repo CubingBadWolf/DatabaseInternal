@@ -1,10 +1,11 @@
 import tabulate
 import sqlite3
-from CreateDatabase import BuildDB
+import os
 
-BuildDB()
+if not os.path.exists('Database.db'):
+    os.system("python CreateDatabase.py")
 
-conn = sqlite3.connect('Test.db')
+conn = sqlite3.connect('Database.db')
 c = conn.cursor()
 
 def getTables():
