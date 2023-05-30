@@ -1,6 +1,7 @@
 import tabulate
 import sqlite3
 import os
+from SanitiseStrings import SanitiseData
 
 if not os.path.exists('Database.db'):
     os.system("python CreateDatabase.py")
@@ -40,6 +41,26 @@ def StudentsFromTeachers(TeacherName):
     c.execute(query)
     return c.fetchall()
 
+def AddClass():
+    SubjectName = SanitiseData(input('Enter what subject is being added: '))
+    while True:
+        YearLvl = input("Enter the subject's year level: ")
+        if YearLvl != 10 or YearLvl != 9:
+            print('Please enter either 10 or 9')
+        else:
+            break
+    c.execute('''INSERT INTO Classes VALUES (NULL, ?,?);''',[SubjectName,YearLvl])
+
+def AddTeacher():
+    TeacherName = SanitiseData(input('What is the teachers full name')).split()
+    c.execute('''INSERT INTO Teachers Values (NULL, ?,?)''', TeacherName) # Adds the teacher to the database and assigns ID
+
+    #Checks for whether subject is already taught by teacher
+    #If exists create a new class.
+    #Else add to joining table teacher ID and class ID
+    
+    pass
+
 def getTables():
     '''Returns the names of all tables in the database'''
     c.execute("SELECT name FROM sqlite_schema WHERE type= 'table' AND name NOT LIKE 'sqlite_%';")
@@ -57,6 +78,6 @@ def printAll(tables):
 
 #printAll(getTables()) #Test functions to check database is created correctly
 
-print(tabulate.tabulate(ClassFromStudent(['Velma','Brissenden']), headers=['Class Name'], tablefmt= 'github'))
-print(tabulate.tabulate(ClassFromTeacher(['Malcolm','Tremayne']), headers=['Class Name', 'Year Level'], tablefmt= 'github'))
-print(tabulate.tabulate(StudentsFromTeachers(['Malcolm','Tremayne']), headers=['First Name', 'Last Name'], tablefmt= 'github'))
+print(tabulate.tabulate(ClassFromStudent(['Velma','Brissenden']), headers=['Class Name'], tablefmt= 'github')+'\n')
+print(tabulate.tabulate(ClassFromTeacher(['Malcolm',"Tremayne"]), headers=['Class Name', 'Year Level'], tablefmt= 'github')+'\n')
+print(tabulate.tabulate(StudentsFromTeachers(['Malcolm',"Tremayne"]), headers=['First Name', 'Last Name'], tablefmt= 'github')+'\n')
