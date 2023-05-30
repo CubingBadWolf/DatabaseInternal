@@ -28,6 +28,17 @@ def ClassFromTeacher(TeacherName):
     c.execute(query)
     return c.fetchall()
 
+def StudentsFromTeachers(TeacherName):
+    '''Returns all the students a given a teachers name'''
+    query = f'''SELECT Students.first_name, Students.last_name
+            FROM Classes
+            JOIN Students_Classes ON Classes.ID = Students_Classes.ClassesID
+            JOIN Students ON Students_Classes.StudentsID = Students.ID
+            JOIN Teachers_Classes ON Classes.ID = Teachers_Classes.ClassesID
+            JOIN Teachers ON Teachers_Classes.TeachersID = Teachers.ID
+            WHERE Teachers.first_name = '{TeacherName[0]}' AND Teachers.last_name = '{TeacherName[1]}';'''
+    c.execute(query)
+    return c.fetchall()
 
 def getTables():
     '''Returns the names of all tables in the database'''
@@ -48,3 +59,4 @@ def printAll(tables):
 
 print(tabulate.tabulate(ClassFromStudent(['Velma','Brissenden']), headers=['Class Name'], tablefmt= 'github'))
 print(tabulate.tabulate(ClassFromTeacher(['Malcolm','Tremayne']), headers=['Class Name', 'Year Level'], tablefmt= 'github'))
+print(tabulate.tabulate(StudentsFromTeachers(['Malcolm','Tremayne']), headers=['First Name', 'Last Name'], tablefmt= 'github'))
