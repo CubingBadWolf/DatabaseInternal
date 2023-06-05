@@ -1,4 +1,5 @@
 import sqlite3
+import tabulate
 from SanitiseStrings import SanitiseData
 
 conn = sqlite3.connect('Database.db')
@@ -16,6 +17,33 @@ def AddClass(SubjectName, YearLvl):
                 else:
                     break
     c.execute('''INSERT INTO Classes VALUES (NULL, ?,?);''',[SubjectName,int(YearLvl)])
+    while True:
+        yn = input('Do you want to add a teacher to this class? y/n:')
+        if yn.lower() == 'y':
+            c.execute('''SELECT ID FROM Classes WHERE Name = ? AND Year_Level = ?;''', [SubjectName,int(YearLvl)])
+            newID = c.fetchone()[0]
+            c.execute('''SELECT ID, first_name, last_name from Teachers;''')
+            output = c.fetchall()
+            ids = [str(item[0]) for item in output]
+            print('Here are all the teachers')
+            print(tabulate.tabulate(output, headers=['ID','First Name', 'Last Name']))
+            while True:
+                teacher = input("Enter the ID of the teacher to add OR enter new to create a new teacher: ")
+                if teacher.lower() == 'new':
+                    AddTeacher(SubjectName, int(YearLvl))
+                    break
+                else:
+                    if teacher not in ids:
+                        print('Please enter a valid id')
+                    else:
+                        c.execute('''INSERT INTO Teachers_Classes VALUES (?,?);''', [int(teacher), int(newID)]) #No risk of error because prechecked items
+                        break
+            break
+        elif yn.lower() == 'n':
+            break
+        else:
+            print('Please enter y or n')
+
     conn.commit()
 
 def AddTeacher(SubjectName, YearLvl):
@@ -69,7 +97,9 @@ def AddTeacher(SubjectName, YearLvl):
             c.execute('''INSERT INTO Teachers_Classes VALUES (?,?);''', (int(teacherID[0]), int(classID[0]))) 
 
         else:
-            c.execute('''INSERT INTO Teachers_Classes VALUES (?,?);''', int(teacherID[0]), int(available[0]))    #If exists create a new class.
+            print(teacherID[0], available[0][0])
+            c.execute('''INSERT INTO Teachers_Classes VALUES (?,?);''', (int(teacherID[0]), int(available[0][0])))    
+        #If exists create a new class.
     
     conn.commit()
 

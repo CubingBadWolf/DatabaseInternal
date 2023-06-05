@@ -1,8 +1,7 @@
 import os
-
+from CreateDatabase import MakeDB
 if not os.path.exists('Database.db'):
-    os.system("python CreateDatabase.py")
-
+    MakeDB()
 import tabulate
 import sqlite3
 from SanitiseStrings import SanitiseData
@@ -31,7 +30,7 @@ def printAll(tables):
 #printAll(getTables()) #Test functions to check database is created correctly
 
 #print(tabulate.tabulate(ClassFromStudent(['dfdsf','fsdf']), headers=['Class Name'], tablefmt= 'github')+'\n')
-#print(tabulate.tabulate(ClassFromTeacher(['John',"Smith"]), headers=['Class Name', 'Year Level'], tablefmt= 'github')+'\n')
+#print(tabulate.tabulate(ClassFromTeacher(['Rosamond',"Arundale"]), headers=['Class Name', 'Year Level'], tablefmt= 'github')+'\n')
 #print(tabulate.tabulate(StudentsFromTeachers(['Malcolm',"Tremayne"]), headers=['First Name', 'Last Name'], tablefmt= 'github')+'\n')
 #print(tabulate.tabulate(StudentsFromClassID(12), headers=['First Name', 'Last Name'],tablefmt='github'))
 

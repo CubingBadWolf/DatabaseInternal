@@ -105,8 +105,9 @@ def CreateJoiningTable(File, Database, Table1, Table2):
 
     conn.commit()
 
-ReadCSVtoDB('Students.csv','Database.db')
-ReadCSVtoDB('Classes.csv','Database.db')
-ReadCSVtoDB('Teachers.csv','Database.db')
-CreateJoiningTable('Students_Classes.csv', 'Database.db', 'Students', 'Classes')
-CreateJoiningTable('Teachers_Classes.csv', 'Database.db', 'Teachers', 'Classes')
+def MakeDB():
+    ReadCSVtoDB('Students.csv','Database.db')
+    ReadCSVtoDB('Classes.csv','Database.db')
+    ReadCSVtoDB('Teachers.csv','Database.db')
+    CreateJoiningTable('Students_Classes.csv', 'Database.db', 'Students', 'Classes')
+    CreateJoiningTable('Teachers_Classes.csv', 'Database.db', 'Teachers', 'Classes')
