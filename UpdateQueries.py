@@ -124,4 +124,57 @@ def UpdateStudentINFO(StudentID):
             break
         else:
             print('Please enter y or n')
+    while True:
+        print('Here are the classes they take:')
+        studentClasses = ClassFromStudent(studentName[0])
+        print(tabulate.tabulate(studentClasses, headers=['Class Name'], tablefmt='github'))
+
+        YN = input('Would you like to add another class? y/n: ')
+        if YN.lower() == 'n':
+            break
+        elif YN.lower() == 'y':
+            newClass = SanitiseData(input('What is the name of the class that you are adding?: '))
+            while True:
+                YearLevel = input('What year level is this class?: ')
+                if YearLevel != '9' and YearLevel != '10':
+                    print('Please enter either 9 or 10')
+                else: break
+            classToAdd = (newClass,YearLevel)
+
+            c.execute(f'''SELECT Classes.Name, Classes.Year_Level
+            FROM Students
+            JOIN Students_Classes ON Students.ID = Students_Classes.StudentsID
+            JOIN Classes ON Students_Classes.ClassesID = Classes.ID
+            WHERE Students.ID = {StudentID};''')
+            listOfClasses = c.fetchall()
+            if classToAdd in listOfClasses:
+                print('This student already takes this class')
+                continue
+            else:
+                c.execute('''SELECT Name, Year_Level FROM Classes;''')
+                allClasses = c.fetchall()
+
+                if classToAdd in allClasses:
+                    c.execute('''SELECT ID FROM Classes WHERE Name = ? AND Year_Level = ?;''', classToAdd)
+                    ClassIDs = c.fetchall()
+                    studentNumbers = []
+                    for Class in ClassIDs:
+                        c.execute(''' SELECT StudentsID from Students_Classes WHERE ClassesID = ?''', Class) #Returns the student's ID who take a class
+                        studentNumbers.append((Class, len(c.fetchall())))
+
+                    studentNumbers = sorted(studentNumbers, key=lambda x: x[1]) # Sorts the list of class numbers ascending
+                    c.execute('''INSERT INTO Students_Classes VALUES (?,?);''', [StudentID, int(studentNumbers[0][0][0])])
+                    continue
+                else:
+                    print('You will need to create this class and add the teacher who teachers it')
+                    AddTeacher(classToAdd[0], classToAdd[1])
+                    # Create a new class and add into the joining table
+                    c.execute('''SELECT ID FROM Classes WHERE Name = ? AND Year_Level = ?;''', classToAdd)
+                    classID = c.fetchone()
+                    print(classID)
+                    c.execute('''INSERT INTO Students_Classes VALUES (?,?);''', (StudentID, int(classID[0]))) 
+                    continue
+
+        else:
+            print('Please enter y or n')
     conn.commit()

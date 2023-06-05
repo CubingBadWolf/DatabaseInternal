@@ -30,15 +30,15 @@ def printAll(tables):
 
 #printAll(getTables()) #Test functions to check database is created correctly
 
-#print(tabulate.tabulate(ClassFromStudent(['Velma','Brissenden']), headers=['Class Name'], tablefmt= 'github')+'\n')
+#print(tabulate.tabulate(ClassFromStudent(['dfdsf','fsdf']), headers=['Class Name'], tablefmt= 'github')+'\n')
 #print(tabulate.tabulate(ClassFromTeacher(['John',"Smith"]), headers=['Class Name', 'Year Level'], tablefmt= 'github')+'\n')
 #print(tabulate.tabulate(StudentsFromTeachers(['Malcolm',"Tremayne"]), headers=['First Name', 'Last Name'], tablefmt= 'github')+'\n')
 #print(tabulate.tabulate(StudentsFromClassID(12), headers=['First Name', 'Last Name'],tablefmt='github'))
 
-#AddClass('Calculus', YearLvl=None) #Works
+#AddClass('Science', YearLvl=10) #Works
 #AddTeacher(SubjectName=None, YearLvl=None) #Works
 #AddStudent() #Works
 #AddTeacher('Programming',10) #Works
-#UpdateStudentINFO(2) #Works
+#UpdateStudentINFO(52) #Works
 
 conn.close()
