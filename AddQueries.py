@@ -2,10 +2,9 @@ import sqlite3
 import tabulate
 from SanitiseStrings import SanitiseData
 
-conn = sqlite3.connect('Database.db')
-c = conn.cursor()
 
-def AddClass(SubjectName, YearLvl):
+def AddClass(conn, SubjectName, YearLvl, teacherCreated):
+    c = conn.cursor()
     if SubjectName == None:
         SubjectName = SanitiseData(input('Enter what subject is being added: '))
     else:
@@ -17,36 +16,38 @@ def AddClass(SubjectName, YearLvl):
                 else:
                     break
     c.execute('''INSERT INTO Classes VALUES (NULL, ?,?);''',[SubjectName,int(YearLvl)])
-    while True:
-        yn = input('Do you want to add a teacher to this class? y/n:')
-        if yn.lower() == 'y':
-            c.execute('''SELECT ID FROM Classes WHERE Name = ? AND Year_Level = ?;''', [SubjectName,int(YearLvl)])
-            newID = c.fetchone()[0]
-            c.execute('''SELECT ID, first_name, last_name from Teachers;''')
-            output = c.fetchall()
-            ids = [str(item[0]) for item in output]
-            print('Here are all the teachers')
-            print(tabulate.tabulate(output, headers=['ID','First Name', 'Last Name']))
-            while True:
-                teacher = input("Enter the ID of the teacher to add OR enter new to create a new teacher: ")
-                if teacher.lower() == 'new':
-                    AddTeacher(SubjectName, int(YearLvl))
-                    break
-                else:
-                    if teacher not in ids:
-                        print('Please enter a valid id')
-                    else:
-                        c.execute('''INSERT INTO Teachers_Classes VALUES (?,?);''', [int(teacher), int(newID)]) #No risk of error because prechecked items
+    if teacherCreated == False:
+        while True:
+            yn = input('Do you want to add a teacher to this class? y/n:')
+            if yn.lower() == 'y':
+                c.execute('''SELECT ID FROM Classes WHERE Name = ? AND Year_Level = ?;''', [SubjectName,int(YearLvl)])
+                newID = c.fetchone()[0]
+                c.execute('''SELECT ID, first_name, last_name from Teachers;''')
+                output = c.fetchall()
+                ids = [str(item[0]) for item in output]
+                print('Here are all the teachers')
+                print(tabulate.tabulate(output, headers=['ID','First Name', 'Last Name']))
+                while True:
+                    teacher = input("Enter the ID of the teacher to add OR enter new to create a new teacher: ")
+                    if teacher.lower() == 'new':
+                        AddTeacher(conn, SubjectName, int(YearLvl))
                         break
-            break
-        elif yn.lower() == 'n':
-            break
-        else:
-            print('Please enter y or n')
+                    else:
+                        if teacher not in ids:
+                            print('Please enter a valid id')
+                        else:
+                            c.execute('''INSERT INTO Teachers_Classes VALUES (?,?);''', [int(teacher), int(newID)]) #No risk of error because prechecked items
+                            break
+                break
+            elif yn.lower() == 'n':
+                break
+            else:
+                print('Please enter y or n')
 
     conn.commit()
 
-def AddTeacher(SubjectName, YearLvl):
+def AddTeacher(conn, SubjectName, YearLvl):
+    c = conn.cursor()
     TeacherName = SanitiseData(input('What is the teachers full name?: ')).split()
     if len(TeacherName) != 2:
         print(f'{TeacherName} can\'t automatically be split into first and last name')
@@ -90,7 +91,7 @@ def AddTeacher(SubjectName, YearLvl):
 
 
         if len(available) == 0:
-            AddClass(SubjectName, YearLvl)
+            AddClass(conn, SubjectName, YearLvl, True)
             # Create a new class and add into the joining table
             c.execute('''SELECT last_insert_rowid()''')
             classID = c.fetchone()
@@ -103,7 +104,8 @@ def AddTeacher(SubjectName, YearLvl):
     
     conn.commit()
 
-def AddStudent():
+def AddStudent(conn):
+    c = conn.cursor()
     StudentName = SanitiseData(input('What is the students full name?: ')).split()
     if len(StudentName) != 2:
         print(f'{StudentName} can\'t automatically be split into first and last name')
@@ -141,8 +143,8 @@ def AddStudent():
         
         if len(classes) == 0: # If Class doesn't exist
 
-            print('You will need to create this class and add the teacher who teachers it')
-            AddTeacher(SubjectName, YearLvl)
+            print('You will need to create this class and add the teacher who teachers it') #TODO add existing teacher instead of creating new one?
+            AddClass(conn, SubjectName, YearLvl, False)
             # Create a new class and add into the joining table
             c.execute('''SELECT ID FROM Classes WHERE Name = ? AND Year_Level = ?;''', [SubjectName, YearLvl])
             classID = c.fetchone()

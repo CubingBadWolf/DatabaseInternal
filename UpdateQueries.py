@@ -4,10 +4,9 @@ from SanitiseStrings import SanitiseData
 from AddQueries import AddClass, AddStudent, AddTeacher
 from SearchQueries import StudentsFromClassID, ClassFromStudent, StudentsFromTeachers, ClassFromTeacher
 
-conn = sqlite3.connect('Database.db')
-c = conn.cursor()
 
-def UpdateStudentINFO(StudentID):
+def UpdateStudentINFO(conn, StudentID):
+    c = conn.cursor()
     c.execute('''SELECT * FROM Students WHERE ID = ?;''', [StudentID])
     info = c.fetchone()
     studentinfo=[item for item in info]
@@ -96,7 +95,7 @@ def UpdateStudentINFO(StudentID):
 
                                         if len(classes) == 0: # If Class doesn't exist
                                             print('You will need to create this class and add the teacher who teachers it')
-                                            AddTeacher(SubjectName, YearLvl[0]) #TODO Database is locked Only sometimes though?
+                                            AddClass(conn, SubjectName, YearLvl[0], False)
                                         
                                             # Create a new class and add into the joining table
                                             c.execute('''SELECT ID FROM Classes WHERE Name = ? AND Year_Level = ?''',(SubjectName, YearLvl[0]))
@@ -119,12 +118,14 @@ def UpdateStudentINFO(StudentID):
                         break
                 except ValueError:
                     print('Please enter a number')
+            conn.commit()
             break
         elif yn.lower() == 'n':
             break
         else:
             print('Please enter y or n')
     while True:
+        conn.commit()
         print('Here are the classes they take:')
         studentClasses = ClassFromStudent(studentName[0])
         print(tabulate.tabulate(studentClasses, headers=['Class Name'], tablefmt='github'))
@@ -167,7 +168,7 @@ def UpdateStudentINFO(StudentID):
                     continue
                 else:
                     print('You will need to create this class and add the teacher who teachers it')
-                    AddTeacher(classToAdd[0], classToAdd[1])
+                    AddClass(conn, classToAdd[0], classToAdd[1], False)
                     # Create a new class and add into the joining table
                     c.execute('''SELECT ID FROM Classes WHERE Name = ? AND Year_Level = ?;''', classToAdd)
                     classID = c.fetchone()
@@ -178,3 +179,6 @@ def UpdateStudentINFO(StudentID):
         else:
             print('Please enter y or n')
     conn.commit()
+
+def UpdateTeacherINFO():
+    pass
