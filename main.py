@@ -8,6 +8,7 @@ from SanitiseStrings import SanitiseData
 from AddQueries import *
 from SearchQueries import *
 from UpdateQueries import *
+from DeleteQueries import *
 
 conn = sqlite3.connect('Database.db')
 c = conn.cursor()                    
@@ -39,5 +40,11 @@ print(tabulate.tabulate(ClassFromTeacher(['Mary',"Kienzle"]), headers=['Class Na
 #AddStudent() #Works
 #AddTeacher('Programming',10) #Works
 #UpdateStudentINFO(conn, 2) #Works
-UpdateTeacherINFO(conn, 2)
+#UpdateTeacherINFO(conn, 2)
+
+#DeleteClass(conn, 2)#Works
+#DeleteStudent(conn, 3)#Works
+#DeleteTeacher(conn, 4)#Works
+
+# Still some testing of some branches of code to do but so far all seem ok
 conn.close()
