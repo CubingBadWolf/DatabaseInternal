@@ -111,3 +111,6 @@ def MakeDB():
     ReadCSVtoDB('Teachers.csv','Database.db')
     CreateJoiningTable('Students_Classes.csv', 'Database.db', 'Students', 'Classes')
     CreateJoiningTable('Teachers_Classes.csv', 'Database.db', 'Teachers', 'Classes')
+
+if __name__ == '__main__':
+    MakeDB()
