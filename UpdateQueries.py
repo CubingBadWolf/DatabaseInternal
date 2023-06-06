@@ -1,11 +1,19 @@
 import sqlite3
 import tabulate
 from SanitiseStrings import SanitiseData
-from AddQueries import AddClass, AddStudent, AddTeacher
-from SearchQueries import StudentsFromClassID, ClassFromStudent, StudentsFromTeachers, ClassFromTeacher
+from AddQueries import AddClass
+from SearchQueries import ClassFromStudent, ClassFromTeacher
 
 
 def UpdateStudentINFO(conn, StudentID):
+    if StudentID == None:
+        while True:
+            try: 
+                StudentID = int(input("Enter the student's ID: "))
+                break
+            except:
+                print('Please enter a valid number')
+
     c = conn.cursor()
     c.execute('''SELECT * FROM Students WHERE ID = ?;''', [StudentID])
     info = c.fetchone()
@@ -183,6 +191,14 @@ def UpdateStudentINFO(conn, StudentID):
 
 
 def UpdateTeacherINFO(conn, TeacherID):
+    if TeacherID == None:
+        while True:
+            try: 
+                TeacherID = int(input("Enter the teacher's ID: "))
+                break
+            except:
+                print('Please enter a valid number')
+
     c = conn.cursor()
     c.execute('''SELECT * FROM Teachers WHERE ID = ?;''', [TeacherID])
     info = c.fetchone()
