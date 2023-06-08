@@ -17,6 +17,10 @@ def UpdateStudentINFO(conn, StudentID):
     c = conn.cursor()
     c.execute('''SELECT * FROM Students WHERE ID = ?;''', [StudentID])
     info = c.fetchone()
+    if info == None:
+        print('This ID is invalid')
+        return
+    
     studentinfo=[item for item in info]
     studentinfo.pop(0)
 
@@ -57,14 +61,14 @@ def UpdateStudentINFO(conn, StudentID):
                 print('Please enter a number')
 
     for collumn in update:
-        changed = SanitiseData(input(f'What would you like to change the {collumns[collumn]} collumn to?:'))
+        changed = SanitiseData(input(f'What would you like to change the {collumns[collumn]} collumn to?:')).capitalize()
         c.execute(f'''UPDATE Students SET {collumns[collumn]} = ?
                     WHERE ID = {StudentID}''',[changed])
     
     c.execute(f'''SELECT first_name, last_name FROM Students WHERE ID = '{StudentID}'; ''')
     studentName = c.fetchall()
     print('Here are the classes they take:')
-    studentClasses = ClassFromStudent(studentName[0])
+    studentClasses = ClassFromStudent(conn,studentName[0])
     print(tabulate.tabulate(studentClasses, headers=['Class Name'], tablefmt='github'))
     while True:
         yn = input('Would you like to update any of these classes? y/n: ')
@@ -96,7 +100,7 @@ def UpdateStudentINFO(conn, StudentID):
                                         c.execute(f'''SELECT Year_Level FROM Students WHERE ID = '{StudentID}';''')
                                         YearLvl = c.fetchone()
 
-                                        SubjectName = SanitiseData(input('Enter what subject you wish to update it to?: ')) 
+                                        SubjectName = SanitiseData(input('Enter what subject you wish to update it to?: ')).capitalize() 
                                         c.execute('''SELECT ID FROM Classes
                                                 WHERE Name = ? AND Year_Level = ?;''', [SubjectName, YearLvl[0]])
                                         classes = c.fetchall()
@@ -135,14 +139,14 @@ def UpdateStudentINFO(conn, StudentID):
     while True:
         conn.commit()
         print('Here are the classes they take:')
-        studentClasses = ClassFromStudent(studentName[0])
+        studentClasses = ClassFromStudent(conn,studentName[0])
         print(tabulate.tabulate(studentClasses, headers=['Class Name'], tablefmt='github'))
 
         YN = input('Would you like to add another class? y/n: ')
         if YN.lower() == 'n':
             break
         elif YN.lower() == 'y':
-            newClass = SanitiseData(input('What is the name of the class that you are adding?: '))
+            newClass = SanitiseData(input('What is the name of the class that you are adding?: ')).capitalize()
             while True:
                 YearLevel = input('What year level is this class?: ')
                 if YearLevel != '9' and YearLevel != '10':
@@ -203,6 +207,9 @@ def UpdateTeacherINFO(conn, TeacherID):
     c = conn.cursor()
     c.execute('''SELECT * FROM Teachers WHERE ID = ?;''', [TeacherID])
     info = c.fetchone()
+    if info == None:
+        print('This ID is invalid')
+        return
     teacherInfo=[item for item in info]
     teacherInfo.pop(0) #Removes ID as that is not needed to update
 
@@ -246,7 +253,7 @@ def UpdateTeacherINFO(conn, TeacherID):
                 print('Please enter a number')
 
     for collumn in update:
-        changed = SanitiseData(input(f'What would you like to change the {collumns[collumn]} collumn to?:'))
+        changed = SanitiseData(input(f'What would you like to change the {collumns[collumn]} collumn to?:')).capitalize()
         c.execute(f'''UPDATE Teachers SET {collumns[collumn]} = ?
                     WHERE ID = {TeacherID}''',[changed])
     
@@ -256,7 +263,7 @@ def UpdateTeacherINFO(conn, TeacherID):
     while True:
         conn.commit()
         print('Here are the classes they teach:')
-        teacherClasses = ClassFromTeacher(teacherName[0])
+        teacherClasses = ClassFromTeacher(conn,teacherName[0])
         print(tabulate.tabulate(teacherClasses, headers=['Class Name', 'Year Level'], tablefmt='github'))
 
         yn = input('Would you like to update any of these classes? y/n: ')
@@ -286,7 +293,7 @@ def UpdateTeacherINFO(conn, TeacherID):
                                     if id not in IDs:
                                         print('Please enter a valid class ID')
                                     else:
-                                        SubjectName = SanitiseData(input('Enter what subject you wish to update it to?: ')) 
+                                        SubjectName = SanitiseData(input('Enter what subject you wish to update it to?: ')).capitalize()
 
                                         while True:
                                             YearLvl = SanitiseData(input('Enter what year level this class would be for: '))
@@ -347,14 +354,14 @@ def UpdateTeacherINFO(conn, TeacherID):
     while True:
         conn.commit()
         print('Here are the classes they teach:')
-        teachingClasses = ClassFromTeacher(teacherName[0])
+        teachingClasses = ClassFromTeacher(conn,teacherName[0])
         print(tabulate.tabulate(teachingClasses, headers=['Class Name', 'Year Level'], tablefmt='github'))
 
         YN = input('Would you like to add another class? y/n: ')
         if YN.lower() == 'n':
             break
         elif YN.lower() == 'y':
-            newClass = SanitiseData(input('What is the name of the class that you are adding?: '))
+            newClass = SanitiseData(input('What is the name of the class that you are adding?: ')).capitalize()
             while True:
                 YearLevel = input('What year level is this class?: ')
                 if YearLevel != '9' and YearLevel != '10':
