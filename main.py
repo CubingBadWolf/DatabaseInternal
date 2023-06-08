@@ -1,32 +1,17 @@
 import os
 from CreateDatabase import MakeDB
+import sqlite3
 import tabulate
 from SanitiseStrings import SanitiseData
-from AddQueries import *
-from SearchQueries import *
-from UpdateQueries import *
-from DeleteQueries import *
+from AddQueries import AddClass, AddStudent, AddTeacher
+from SearchQueries import StudentsFromClass,StudentsFromTeachers,TeachersFromStudent,TeacherFromClass,ClassFromStudent,ClassFromTeacher,AllStudents,AllTeachers,AllClasses
+from UpdateQueries import UpdateStudentINFO,UpdateTeacherINFO
+from DeleteQueries import DeleteClass,DeleteStudent,DeleteTeacher
 
-def getTables():
-    '''Returns the names of all tables in the database'''
-    c.execute("SELECT name FROM sqlite_schema WHERE type= 'table' AND name NOT LIKE 'sqlite_%';")
-    return c.fetchall()
-
-def printAll(tables):
-    '''Takes the tables in the database and returns all the tables and data'''
-    for table in tables:
-        cursor = c.execute(f"SELECT * FROM {table[0]};")
-        collums = [description[0] for description in cursor.description]
-
-        c.execute(f"SELECT * FROM {table[0]};")
-        print(tabulate.tabulate(c.fetchall(), headers=collums, tablefmt='github'))
-        print('')
-
-#printAll(getTables()) #Test functions to check database is created correctly
 
 # Error prevention isn't the best TODO make it better. + TODO Check injection vulnerability
 
-def menu():
+def menu(conn):
     options = {
         "add": {
             "students": lambda: AddStudent(conn),
@@ -44,30 +29,30 @@ def menu():
         },
         "view": {
             "students": {
-                "classes": lambda: print(tabulate.tabulate(StudentsFromClass(None), headers=['First Name', 'Last Name', 'Year Level'], tablefmt='github') + '\n'),
-                "teachers": lambda: print(tabulate.tabulate(StudentsFromTeachers(None), headers=['First Name', 'Last Name', 'Year Level'], tablefmt='github') + '\n'),
-                "": lambda: print(tabulate.tabulate(AllStudents(), headers=['First Name', 'Last Name', 'Year Level'], tablefmt='github') + '\n')
+                "classes": lambda: print(tabulate.tabulate(StudentsFromClass(conn,None), headers=['Id','First Name', 'Last Name', 'Year Level'], tablefmt='github') + '\n'),
+                "teachers": lambda: print(tabulate.tabulate(StudentsFromTeachers(conn,None), headers=['First Name', 'Last Name', 'Year Level'], tablefmt='github') + '\n'),
+                "": lambda: print(tabulate.tabulate(AllStudents(conn), headers=['First Name', 'Last Name', 'Year Level'], tablefmt='github') + '\n')
             },
             "classes": {
-                "students": lambda: print(tabulate.tabulate(ClassFromStudent(None), headers=['Class Name', 'Year Level'], tablefmt='github')),
-                "teachers": lambda: print(tabulate.tabulate(ClassFromTeacher(None), headers=['Class Name', 'Year Level'], tablefmt='github')),
-                "": lambda: print(tabulate.tabulate(AllClasses(), headers=['Class Name', 'Year Level'], tablefmt='github'))
+                "students": lambda: print(tabulate.tabulate(ClassFromStudent(conn,None), headers=['Id','Class Name', 'Year Level'], tablefmt='github')),
+                "teachers": lambda: print(tabulate.tabulate(ClassFromTeacher(conn,None), headers=['Id','Class Name', 'Year Level'], tablefmt='github')),
+                "": lambda: print(tabulate.tabulate(AllClasses(conn), headers=['Id','Class Name', 'Year Level'], tablefmt='github'))
             },
             "teachers": {
-                "students": lambda: print(tabulate.tabulate(TeachersFromStudent(None), headers=['First Name', 'Last Name'], tablefmt='github')),
-                "classes": lambda: print(tabulate.tabulate(TeacherFromClass(None), headers=['First Name', 'Last Name'], tablefmt='github')),
-                "": lambda: print(tabulate.tabulate(AllTeachers(), headers=['First Name', 'Last Name'], tablefmt='github'))
+                "students": lambda: print(tabulate.tabulate(TeachersFromStudent(conn,None), headers=['Id','First Name', 'Last Name'], tablefmt='github')),
+                "classes": lambda: print(tabulate.tabulate(TeacherFromClass(conn,None), headers=['Id','First Name', 'Last Name'], tablefmt='github')),
+                "": lambda: print(tabulate.tabulate(AllTeachers(conn), headers=['Id','First Name', 'Last Name'], tablefmt='github'))
             }
         }
     }
 
-    option = input("Select an option [add, update, delete, view]: ")
+    option = input("Select an option to apply to the database from these options [add, update, delete, view]: ")
     if option in options:
-        sub_option = input(f"Select an option {list(options[option].keys())}: ").lower()
+        sub_option = input(f"Select what tables you want to use infomation for. Here are the options {list(options[option].keys())}: ").lower()
         if sub_option in options[option]:
             sub_sub_options = options[option][sub_option]
             if isinstance(sub_sub_options, dict):
-                sub_sub_option = input(f"Select an option {list(sub_sub_options.keys())}: ").lower()
+                sub_sub_option = input(f"Select an option to use as an additional result (i.e classes if you want to view _ from a class, you can press enter to return all items) {list(sub_sub_options.keys())}: ").lower()
                 try:
                     sub_sub_options[sub_sub_option]()
                     return True
@@ -97,10 +82,18 @@ def menu():
 
 if __name__ == '__main__':
     if not os.path.exists('Database.db'):
+        print('ran')
         MakeDB()                
 
-    end = False
-    while not end:
-        end = menu()
-
+    conn = sqlite3.connect('Database.db')
+    while True:
+        yn = input('Do you want to make a query to the database y/n:')
+        if yn.lower() == 'n':
+            break
+        elif yn.lower() == 'y':
+            queried = False
+            while not queried:
+                queried = menu(conn)
+        else:
+            print('Please enter y or n')
 conn.close()

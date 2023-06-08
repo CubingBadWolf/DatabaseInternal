@@ -1,10 +1,9 @@
 import sqlite3
 from SanitiseStrings import SanitiseData
 
-conn = sqlite3.connect('Database.db')
-c = conn.cursor()
 
-def ClassFromStudent(StudentName):
+def ClassFromStudent(conn, StudentName):
+    c = conn.cursor()
     if StudentName == None:
         StudentName = SanitiseData(input('What is the students full name?: ')).split()
         if len(StudentName) != 2:
@@ -14,7 +13,7 @@ def ClassFromStudent(StudentName):
                 StudentName = [StudentFirstName, StudentLastName]
     
     '''Returns the classes a student takes when provided with the students name'''
-    query = f'''SELECT Classes.Name, Classes.Year_Level
+    query = f'''SELECT Classes.ID, Classes.Name, Classes.Year_Level
             FROM Students
             JOIN Students_Classes ON Students.ID = Students_Classes.StudentsID
             JOIN Classes ON Students_Classes.ClassesID = Classes.ID
@@ -22,8 +21,10 @@ def ClassFromStudent(StudentName):
     c.execute(query)
     return c.fetchall()
 
-def ClassFromTeacher(TeacherName):
+def ClassFromTeacher(conn, TeacherName):
     '''Returns the classes and the class year level when given a teachers name'''
+    c = conn.cursor()
+
     if TeacherName == None:
         TeacherName = SanitiseData(input('What is the teachers full name?: ')).split()
         if len(TeacherName) != 2:
@@ -32,7 +33,7 @@ def ClassFromTeacher(TeacherName):
             TeacherLastName = SanitiseData(input('Please enter the last name/names: '))
             TeacherName = [TeacherFirstName, TeacherLastName]
 
-    query = f'''SELECT Classes.Name, Classes.Year_Level
+    query = f'''SELECT Classes.ID, Classes.Name, Classes.Year_Level
             FROM Teachers
             JOIN Teachers_Classes ON Teachers.ID = Teachers_Classes.TeachersID
             JOIN Classes ON Teachers_Classes.ClassesID = Classes.ID
@@ -40,8 +41,10 @@ def ClassFromTeacher(TeacherName):
     c.execute(query)
     return c.fetchall()
 
-def StudentsFromTeachers(TeacherName):
+def StudentsFromTeachers(conn, TeacherName):
     '''Returns all the students a given a teachers name'''
+    c = conn.cursor()
+
     if TeacherName == None:
         TeacherName = SanitiseData(input('What is the teachers full name?: ')).split()
         if len(TeacherName) != 2:
@@ -50,7 +53,7 @@ def StudentsFromTeachers(TeacherName):
             TeacherLastName = SanitiseData(input('Please enter the last name/names: '))
             TeacherName = [TeacherFirstName, TeacherLastName]
 
-    query = f'''SELECT Students.first_name, Students.last_name, Students.Year_Level
+    query = f'''SELECT Students.ID, Students.first_name, Students.last_name, Students.Year_Level
             FROM Classes
             JOIN Students_Classes ON Classes.ID = Students_Classes.ClassesID
             JOIN Students ON Students_Classes.StudentsID = Students.ID
@@ -60,7 +63,8 @@ def StudentsFromTeachers(TeacherName):
     c.execute(query)
     return c.fetchall()
 
-def StudentsFromClass(ClassID):
+def StudentsFromClass(conn, ClassID):
+    c = conn.cursor()
     if ClassID == None:
         while True:
             try: 
@@ -69,7 +73,7 @@ def StudentsFromClass(ClassID):
             except:
                 print('Please enter a valid number')
                 
-    query = f'''SELECT Students.first_name, Students.last_name, Students.Year_Level
+    query = f'''SELECT Students.ID, Students.first_name, Students.last_name, Students.Year_Level
             FROM Classes
             JOIN Students_Classes ON Classes.ID = Students_Classes.ClassesID
             JOIN Students ON Students_Classes.StudentsID = Students.ID
@@ -77,7 +81,8 @@ def StudentsFromClass(ClassID):
     c.execute(query)
     return c.fetchall()
 
-def TeachersFromStudent(StudentID):
+def TeachersFromStudent(conn, StudentID):
+    c = conn.cursor()
     if StudentID == None:
         while True:
             try: 
@@ -86,7 +91,7 @@ def TeachersFromStudent(StudentID):
             except:
                 print('Please enter a valid number')
                 
-    query = f'''SELECT Teachers.first_name, Teachers.last_name
+    query = f'''SELECT Teachers.ID, Teachers.first_name, Teachers.last_name
             FROM Classes
             JOIN Students_Classes ON Classes.ID = Students_Classes.ClassesID
             JOIN Students ON Students_Classes.StudentsID = Students.ID
@@ -96,7 +101,9 @@ def TeachersFromStudent(StudentID):
     c.execute(query)
     return c.fetchall()
     
-def TeacherFromClass(ClassID):
+def TeacherFromClass(conn,ClassID):
+    c = conn.cursor()
+
     if ClassID == None:
         while True:
             try: 
@@ -105,7 +112,7 @@ def TeacherFromClass(ClassID):
             except:
                 print('Please enter a valid number')
 
-    query = f'''SELECT Teachers.first_name, Teachers.last_name
+    query = f'''SELECT Teachers.ID, Teachers.first_name, Teachers.last_name
             FROM Classes
             JOIN Teachers_Classes ON Classes.ID = Teachers_Classes.ClassesID
             JOIN Teachers ON Teachers_Classes.TeachersID = Teachers.ID
@@ -113,14 +120,20 @@ def TeacherFromClass(ClassID):
     c.execute(query)
     return c.fetchall()
 
-def AllStudents():
-    c.execute('''SELECT First_Name, Last_Name, Year_Level FROM Students;''')
+def AllStudents(conn):
+    c = conn.cursor()
+
+    c.execute('''SELECT ID, First_Name, Last_Name, Year_Level FROM Students;''')
     return c.fetchall()
 
-def AllTeachers():
-    c.execute('''SELECT First_Name, Last_Name FROM Teachers;''')
+def AllTeachers(conn):
+    c = conn.cursor()
+
+    c.execute('''SELECT ID, First_Name, Last_Name FROM Teachers;''')
     return c.fetchall()
 
-def AllClasses():
-    c.execute('''SELECT Name, Year_Level FROM Classes;''')
+def AllClasses(conn):
+    c = conn.cursor()
+
+    c.execute('''SELECT ID, Name, Year_Level FROM Classes;''')
     return c.fetchall()

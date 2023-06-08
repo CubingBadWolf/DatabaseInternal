@@ -14,6 +14,7 @@ def DeleteClass(conn, ID):
     c.execute("DELETE FROM Classes WHERE ID = ?", [ID])
     c.execute("DELETE FROM Students_Classes WHERE ClassesID = ?",[ID])
     c.execute("DELETE FROM Teachers_Classes WHERE ClassesID = ?",[ID])
+    print('Deletion successful')
     conn.commit()
 
 def DeleteTeacher(conn, ID):
@@ -28,6 +29,8 @@ def DeleteTeacher(conn, ID):
     c = conn.cursor()
     c.execute("DELETE FROM Teachers WHERE ID = ?", [ID])
     c.execute("DELETE FROM Teachers_Classes WHERE TeachersID = ?",[ID])
+
+    print('Deletion successful')
     conn.commit()
 
 def DeleteStudent(conn, ID):
@@ -42,4 +45,6 @@ def DeleteStudent(conn, ID):
     c = conn.cursor()
     c.execute("DELETE FROM Students WHERE ID = ?", [ID])
     c.execute("DELETE FROM Students_Classes WHERE StudentsID = ?",[ID])
+
+    print('Deletion successful')
     conn.commit()

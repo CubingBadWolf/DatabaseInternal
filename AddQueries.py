@@ -44,6 +44,7 @@ def AddClass(conn, SubjectName, YearLvl, teacherCreated):
             else:
                 print('Please enter y or n')
 
+    print('Addition of Class successful')
     conn.commit()
 
 def AddTeacher(conn, SubjectName, YearLvl):
@@ -73,7 +74,8 @@ def AddTeacher(conn, SubjectName, YearLvl):
     for i in range(amn):
         if SubjectName == None:
             SubjectName = SanitiseData(input('Enter what subject they teach?: ')) 
-
+        
+        
         c.execute('''SELECT ID FROM Classes
                  WHERE Name = ?;''', [SubjectName])
         classes = c.fetchall()
@@ -91,6 +93,13 @@ def AddTeacher(conn, SubjectName, YearLvl):
 
 
         if len(available) == 0:
+            if YearLvl == None:
+                while True:
+                    YearLvl = input('What year level is this class?')
+                    if YearLvl != '9' and YearLvl != '10':
+                        print('Please enter 9 or 10')
+                    else: break
+                
             AddClass(conn, SubjectName, YearLvl, True)
             # Create a new class and add into the joining table
             c.execute('''SELECT last_insert_rowid()''')
@@ -101,7 +110,9 @@ def AddTeacher(conn, SubjectName, YearLvl):
             print(teacherID[0], available[0][0])
             c.execute('''INSERT INTO Teachers_Classes VALUES (?,?);''', (int(teacherID[0]), int(available[0][0])))    
         #If exists create a new class.
-    
+        SubjectName = None
+        YearLvl = None
+    print('Addition of Teacher successful')
     conn.commit()
 
 def AddStudent(conn):
@@ -161,4 +172,5 @@ def AddStudent(conn):
             studentNumbers = sorted(studentNumbers, key=lambda x: x[1]) # Sorts the list of class numbers ascending
             c.execute('''INSERT INTO Students_Classes VALUES (?,?);''', [int(StudentID[0]), int(studentNumbers[0][0][0])]) # Adds the student to the lowest class
     
+    print('Addition of Student successful')
     conn.commit()

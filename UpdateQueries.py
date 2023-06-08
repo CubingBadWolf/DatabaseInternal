@@ -186,6 +186,7 @@ def UpdateStudentINFO(conn, StudentID):
 
         else:
             print('Please enter y or n')
+    print('Update successful')
     conn.commit()
 
 
@@ -359,14 +360,8 @@ def UpdateTeacherINFO(conn, TeacherID):
                 if YearLevel != '9' and YearLevel != '10':
                     print('Please enter either 9 or 10')
                 else: break
-            classToAdd = (newClass,YearLevel)
-
-            c.execute(f'''SELECT Classes.Name, Classes.Year_Level
-            FROM Teachers
-            JOIN Teachers_Classes ON Teachers.ID = Teachers_Classes.ClassesID
-            JOIN Classes ON Teachers_Classes.ClassesID = Classes.ID
-            WHERE Teachers.ID = {TeacherID};''')
-            listOfClasses = c.fetchall()
+            classToAdd = (newClass,int(YearLevel))
+            listOfClasses = [item[1:] for item in teacherClasses]
             if classToAdd in listOfClasses:
                 print('This teacher already teaches this class')
                 continue
@@ -411,4 +406,5 @@ def UpdateTeacherINFO(conn, TeacherID):
         else:
             print('Please enter y or n')
 
+    print('Update successful')
     conn.commit()
