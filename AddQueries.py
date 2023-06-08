@@ -50,13 +50,16 @@ def AddClass(conn, SubjectName, YearLvl, teacherCreated):
 
 def AddTeacher(conn, SubjectName, YearLvl):
     c = conn.cursor()
-    TeacherName = SanitiseData(input('What is the teachers full name?: ')).capitalize().split()
+    TeacherName = SanitiseData(input('What is the teachers full name?: ')).split()
     if len(TeacherName) != 2:
         print(f'{TeacherName} can\'t automatically be split into first and last name')
         TeacherFirstName = SanitiseData(input('Please enter the first name/names: ')).capitalize()
         TeacherLastName = SanitiseData(input('Please enter the last name/names: ')).capitalize()
         TeacherName = [TeacherFirstName, TeacherLastName]
 
+    for i in range(len(TeacherName)-1):
+        TeacherName[i] = TeacherName[i].capitalize()
+        
     c.execute('''INSERT INTO Teachers Values (NULL, ?,?)''', TeacherName) # Adds the teacher to the database and assigns ID
     c.execute('''SELECT last_insert_rowid()''')
     teacherID = c.fetchone()
@@ -124,6 +127,9 @@ def AddStudent(conn):
         StudentFirstName = SanitiseData(input('Please enter the first name/names: ')).capitalize()
         StudentLastName = SanitiseData(input('Please enter the last name/names: ')).capitalize()
         StudentName = [StudentFirstName, StudentLastName]
+
+    for i in range(len(StudentName)-1):
+        StudentName[i] = StudentName[i].capitalize()
 
     while True:
             YearLvl = input("Enter the student's year level: ")
