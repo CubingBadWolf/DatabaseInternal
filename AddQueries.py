@@ -1,20 +1,21 @@
 import sqlite3
 import tabulate
 from SanitiseStrings import SanitiseData
+from SearchQueries import ClassFromStudent
 
 
 def AddClass(conn, SubjectName, YearLvl, teacherCreated):
     c = conn.cursor()
     if SubjectName == None:
-        SubjectName = SanitiseData(input('Enter what subject is being added: '))
-    else:
-        if YearLvl == None:
-            while True:
-                YearLvl = input("Enter the subject's year level: ")
-                if YearLvl != '10' and YearLvl != '9':
-                    print('Please enter either 10 or 9')
-                else:
-                    break
+        SubjectName = SanitiseData(input('Enter what subject is being added: ')).capitalize()
+    
+    if YearLvl == None:
+        while True:
+            YearLvl = input("Enter the subject's year level: ")
+            if YearLvl != '10' and YearLvl != '9':
+                print('Please enter either 10 or 9')
+            else:
+                break
     c.execute('''INSERT INTO Classes VALUES (NULL, ?,?);''',[SubjectName,int(YearLvl)])
     if teacherCreated == False:
         while True:
@@ -52,10 +53,13 @@ def AddTeacher(conn, SubjectName, YearLvl):
     TeacherName = SanitiseData(input('What is the teachers full name?: ')).split()
     if len(TeacherName) != 2:
         print(f'{TeacherName} can\'t automatically be split into first and last name')
-        TeacherFirstName = SanitiseData(input('Please enter the first name/names: '))
-        TeacherLastName = SanitiseData(input('Please enter the last name/names: '))
+        TeacherFirstName = SanitiseData(input('Please enter the first name/names: ')).capitalize()
+        TeacherLastName = SanitiseData(input('Please enter the last name/names: ')).capitalize()
         TeacherName = [TeacherFirstName, TeacherLastName]
 
+    for i in range(len(TeacherName)-1):
+        TeacherName[i] = TeacherName[i].capitalize()
+        
     c.execute('''INSERT INTO Teachers Values (NULL, ?,?)''', TeacherName) # Adds the teacher to the database and assigns ID
     c.execute('''SELECT last_insert_rowid()''')
     teacherID = c.fetchone()
@@ -73,7 +77,7 @@ def AddTeacher(conn, SubjectName, YearLvl):
 
     for i in range(amn):
         if SubjectName == None:
-            SubjectName = SanitiseData(input('Enter what subject they teach?: ')) 
+            SubjectName = SanitiseData(input('Enter what subject they teach?: ')).capitalize() 
         
         
         c.execute('''SELECT ID FROM Classes
@@ -117,12 +121,15 @@ def AddTeacher(conn, SubjectName, YearLvl):
 
 def AddStudent(conn):
     c = conn.cursor()
-    StudentName = SanitiseData(input('What is the students full name?: ')).split()
+    StudentName = SanitiseData(input('What is the students full name?: ')).capitalize().split()
     if len(StudentName) != 2:
         print(f'{StudentName} can\'t automatically be split into first and last name')
-        StudentFirstName = SanitiseData(input('Please enter the first name/names: '))
-        StudentLastName = SanitiseData(input('Please enter the last name/names: '))
+        StudentFirstName = SanitiseData(input('Please enter the first name/names: ')).capitalize()
+        StudentLastName = SanitiseData(input('Please enter the last name/names: ')).capitalize()
         StudentName = [StudentFirstName, StudentLastName]
+
+    for i in range(len(StudentName)-1):
+        StudentName[i] = StudentName[i].capitalize()
 
     while True:
             YearLvl = input("Enter the student's year level: ")
@@ -147,11 +154,17 @@ def AddStudent(conn):
             print('Please enter a positive integer')
 
     for i in range(amn):
-        SubjectName = SanitiseData(input('Enter what subject do they take?: ')) 
+        while True:
+            SubjectName = SanitiseData(input('Enter what subject do they take?: ')).capitalize() 
+            CurrentClasses = [item[1:] for item in ClassFromStudent(conn, StudentName)]
+            if (SubjectName, int(YearLvl)) in CurrentClasses:
+                print('They already take this class, please enter a different class')
+            else:
+                break
         c.execute('''SELECT ID FROM Classes
                  WHERE Name = ? AND Year_Level = ?;''', [SubjectName, YearLvl])
         classes = c.fetchall()
-        
+
         if len(classes) == 0: # If Class doesn't exist
 
             print('You will need to create this class and add the teacher who teachers it') #TODO add existing teacher instead of creating new one?

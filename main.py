@@ -82,7 +82,6 @@ def menu(conn):
 
 if __name__ == '__main__':
     if not os.path.exists('Database.db'):
-        print('ran')
         MakeDB()                
 
     conn = sqlite3.connect('Database.db')
