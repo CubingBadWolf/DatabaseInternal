@@ -11,7 +11,7 @@ def DeleteClass(conn, ID):
                 print('Please enter a valid number')
 
     c = conn.cursor()
-    c.execute('SELECT FROM Classes WHERE ID = ?', [ID])
+    c.execute('SELECT * FROM Classes WHERE ID = ?;', [ID])
     if len(c.fetchall()) == 0:
         print(f'No data found with ID = {ID}')
     else:
@@ -31,7 +31,7 @@ def DeleteTeacher(conn, ID):
                 print('Please enter a valid number')
 
     c = conn.cursor()
-    c.execute('SELECT FROM Students WHERE ID = ?', [ID])
+    c.execute('SELECT * FROM Teachers WHERE ID = ?;', [ID])
     if len(c.fetchall()) == 0:
         print(f'No data found with ID = {ID}')
     else:
@@ -51,7 +51,7 @@ def DeleteStudent(conn, ID):
                 print('Please enter a valid number')
 
     c = conn.cursor()
-    c.execute('SELECT FROM Students WHERE ID = ?', [ID])
+    c.execute('SELECT * FROM Students WHERE ID = ?;', [ID])
     if len(c.fetchall()) == 0:
         print(f'No data found with ID = {ID}')
     else:
