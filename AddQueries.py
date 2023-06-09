@@ -111,7 +111,6 @@ def AddTeacher(conn, SubjectName, YearLvl):
             c.execute('''INSERT INTO Teachers_Classes VALUES (?,?);''', (int(teacherID[0]), int(classID[0]))) 
 
         else:
-            print(teacherID[0], available[0][0])
             c.execute('''INSERT INTO Teachers_Classes VALUES (?,?);''', (int(teacherID[0]), int(available[0][0])))    
         #If exists create a new class.
         SubjectName = None
