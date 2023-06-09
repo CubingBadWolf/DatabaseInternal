@@ -184,7 +184,6 @@ def UpdateStudentINFO(conn, StudentID):
                     # Create a new class and add into the joining table
                     c.execute('''SELECT ID FROM Classes WHERE Name = ? AND Year_Level = ?;''', classToAdd)
                     classID = c.fetchone()
-                    print(classID)
                     c.execute('''INSERT INTO Students_Classes VALUES (?,?);''', (StudentID, int(classID[0]))) 
                     continue
 
