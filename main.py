@@ -14,33 +14,33 @@ from DeleteQueries import DeleteClass,DeleteStudent,DeleteTeacher
 def menu(conn):
     options = {
         "add": {
-            "students": lambda: AddStudent(conn),
-            "classes": lambda: AddClass(conn, None, None, False),
-            "teachers": lambda: AddTeacher(conn, None, None)
+            "student": lambda: AddStudent(conn),
+            "class": lambda: AddClass(conn, None, None, False),
+            "teacher": lambda: AddTeacher(conn, None, None)
         },
         "update": {
-            "students": lambda: UpdateStudentINFO(conn, None),
-            "teachers": lambda: UpdateTeacherINFO(conn, None)
+            "student": lambda: UpdateStudentINFO(conn, None),
+            "teacher": lambda: UpdateTeacherINFO(conn, None)
         },
         "delete": {
-            "students": lambda: DeleteStudent(conn, None),
-            "classes": lambda: DeleteClass(conn, None),
-            "teachers": lambda: DeleteTeacher(conn, None)
+            "student": lambda: DeleteStudent(conn, None),
+            "class": lambda: DeleteClass(conn, None),
+            "teacher": lambda: DeleteTeacher(conn, None)
         },
         "view": {
             "students": {
-                "classes": lambda: print(tabulate.tabulate(StudentsFromClass(conn,None), headers=['Id','First Name', 'Last Name', 'Year Level'], tablefmt='github') + '\n'),
-                "teachers": lambda: print(tabulate.tabulate(StudentsFromTeachers(conn,None), headers=['First Name', 'Last Name', 'Year Level'], tablefmt='github') + '\n'),
+                "class": lambda: print(tabulate.tabulate(StudentsFromClass(conn,None), headers=['Id','First Name', 'Last Name', 'Year Level'], tablefmt='github') + '\n'),
+                "teacher": lambda: print(tabulate.tabulate(StudentsFromTeachers(conn,None), headers=['First Name', 'Last Name', 'Year Level'], tablefmt='github') + '\n'),
                 "": lambda: print(tabulate.tabulate(AllStudents(conn), headers=['First Name', 'Last Name', 'Year Level'], tablefmt='github') + '\n')
             },
             "classes": {
-                "students": lambda: print(tabulate.tabulate(ClassFromStudent(conn,None), headers=['Id','Class Name', 'Year Level'], tablefmt='github')),
-                "teachers": lambda: print(tabulate.tabulate(ClassFromTeacher(conn,None), headers=['Id','Class Name', 'Year Level'], tablefmt='github')),
+                "student": lambda: print(tabulate.tabulate(ClassFromStudent(conn,None), headers=['Id','Class Name', 'Year Level'], tablefmt='github')),
+                "teacher": lambda: print(tabulate.tabulate(ClassFromTeacher(conn,None), headers=['Id','Class Name', 'Year Level'], tablefmt='github')),
                 "": lambda: print(tabulate.tabulate(AllClasses(conn), headers=['Id','Class Name', 'Year Level'], tablefmt='github'))
             },
             "teachers": {
-                "students": lambda: print(tabulate.tabulate(TeachersFromStudent(conn,None), headers=['Id','First Name', 'Last Name'], tablefmt='github')),
-                "classes": lambda: print(tabulate.tabulate(TeacherFromClass(conn,None), headers=['Id','First Name', 'Last Name'], tablefmt='github')),
+                "student": lambda: print(tabulate.tabulate(TeachersFromStudent(conn,None), headers=['Id','First Name', 'Last Name'], tablefmt='github')),
+                "class": lambda: print(tabulate.tabulate(TeacherFromClass(conn,None), headers=['Id','First Name', 'Last Name'], tablefmt='github')),
                 "": lambda: print(tabulate.tabulate(AllTeachers(conn), headers=['Id','First Name', 'Last Name'], tablefmt='github'))
             }
         }
@@ -52,7 +52,7 @@ def menu(conn):
         if sub_option in options[option]:
             sub_sub_options = options[option][sub_option]
             if isinstance(sub_sub_options, dict):
-                sub_sub_option = input(f"Select an option to use as an additional result (i.e classes if you want to view _ from a class, you can press enter to return all items) {list(sub_sub_options.keys())}: ").lower()
+                sub_sub_option = input(f"Select an option to use as an additional parameter (i.e classes if you want to view _ from a class, you can press enter to return all items) {list(sub_sub_options.keys())}: ").lower()
                 try:
                     sub_sub_options[sub_sub_option]()
                     return True
