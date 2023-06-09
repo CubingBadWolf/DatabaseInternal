@@ -11,10 +11,14 @@ def DeleteClass(conn, ID):
                 print('Please enter a valid number')
 
     c = conn.cursor()
-    c.execute("DELETE FROM Classes WHERE ID = ?", [ID])
-    c.execute("DELETE FROM Students_Classes WHERE ClassesID = ?",[ID])
-    c.execute("DELETE FROM Teachers_Classes WHERE ClassesID = ?",[ID])
-    print('Deletion successful')
+    c.execute('SELECT FROM Classes WHERE ID = ?', [ID])
+    if len(c.fetchall()) == 0:
+        print(f'No data found with ID = {ID}')
+    else:
+        c.execute("DELETE FROM Classes WHERE ID = ?", [ID])
+        c.execute("DELETE FROM Students_Classes WHERE ClassesID = ?",[ID])
+        c.execute("DELETE FROM Teachers_Classes WHERE ClassesID = ?",[ID])
+        print('Deletion successful')
     conn.commit()
 
 def DeleteTeacher(conn, ID):
@@ -27,10 +31,14 @@ def DeleteTeacher(conn, ID):
                 print('Please enter a valid number')
 
     c = conn.cursor()
-    c.execute("DELETE FROM Teachers WHERE ID = ?", [ID])
-    c.execute("DELETE FROM Teachers_Classes WHERE TeachersID = ?",[ID])
+    c.execute('SELECT FROM Students WHERE ID = ?', [ID])
+    if len(c.fetchall()) == 0:
+        print(f'No data found with ID = {ID}')
+    else:
+        c.execute("DELETE FROM Teachers WHERE ID = ?", [ID])
+        c.execute("DELETE FROM Teachers_Classes WHERE TeachersID = ?",[ID])
 
-    print('Deletion successful')
+        print('Deletion successful')
     conn.commit()
 
 def DeleteStudent(conn, ID):
@@ -43,8 +51,12 @@ def DeleteStudent(conn, ID):
                 print('Please enter a valid number')
 
     c = conn.cursor()
-    c.execute("DELETE FROM Students WHERE ID = ?", [ID])
-    c.execute("DELETE FROM Students_Classes WHERE StudentsID = ?",[ID])
+    c.execute('SELECT FROM Students WHERE ID = ?', [ID])
+    if len(c.fetchall()) == 0:
+        print(f'No data found with ID = {ID}')
+    else:
+        c.execute("DELETE FROM Students WHERE ID = ?", [ID])
+        c.execute("DELETE FROM Students_Classes WHERE StudentsID = ?",[ID])
 
-    print('Deletion successful')
+        print('Deletion successful')
     conn.commit()
